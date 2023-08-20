@@ -2,67 +2,64 @@ package br.com.damatta;
 
 import br.com.damatta.cnpj.TCNPJ;
 import br.com.damatta.cpf.TCPF;
+import br.com.damatta.ie.TIE;
 
 public class ValidatorDocBr {
     private final TCNPJ cnpjValidator;
     private final TCPF cpfValidator;
+    private final TIE ieValidator;
 
     public ValidatorDocBr() {
         cnpjValidator = new TCNPJ();
         cpfValidator = new TCPF();
+        ieValidator = new TIE();
     }
 
-    public boolean isValidCnpjCpf(final String cnpjCpf){
-        final var doc = clean(cnpjCpf);
-
-        if (doc.length() != 11 && doc.length() != 14){
+    public boolean isValidCnpjCpf(final String cnpjCpf) {
+        if (isInvalidInputCnpjCpf(cnpjCpf)) {
             return false;
         }
 
-        if (doc.length() == 14){
-            return isValidCnpjClean(doc);
+        if (cnpjCpf.length() != 11 && cnpjCpf.length() != 14){
+            return false;
+        }
+
+        if (cnpjCpf.length() == 14){
+            return cnpjValidator.isValid(cnpjCpf);
         } else {
-            return isValidCpfClean(doc);
+            return cpfValidator.isValid(cnpjCpf);
         }
     }
 
-    public boolean isValidCnpj(final String cnpj){
-        final var doc = clean(cnpj);
-
-        if (doc.length() != 14){
+    public boolean isValidCnpj(final String cnpj) {
+        if (isInvalidInputCnpjCpf(cnpj)) {
             return false;
         }
 
-        return isValidCnpjClean(doc);
-    }
+        if (cnpj.length() != 14) {
+            return false;
+        }
 
-    private boolean isValidCnpjClean(final String cnpj){
         return cnpjValidator.isValid(cnpj);
     }
 
-    public boolean isValidCpf(final String cpf){
-        final var doc = clean(cpf);
-
-        if (doc.length() != 11){
+    public boolean isValidCpf(final String cpf) {
+        if (isInvalidInputCnpjCpf(cpf)) {
             return false;
         }
 
-        return isValidCpfClean(doc);
-    }
+        if (cpf.length() != 11) {
+            return false;
+        }
 
-    private boolean isValidCpfClean(final String cpf){
         return cpfValidator.isValid(cpf);
     }
 
-    public boolean isValidIe(final String ie, final String uf){
-        return false;
+    public boolean isValidIE(final String ie, final String uf){
+        return ieValidator.isValid(ie,uf);
     }
 
-    private String clean(final String texto){
-        if (texto == null){
-            return "";
-        }
-
-        return texto.replaceAll("\\D","");
+    private boolean isInvalidInputCnpjCpf(final String texto) {
+        return (texto == null || !texto.matches("\\d+"));
     }
 }
