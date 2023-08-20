@@ -1,9 +1,8 @@
 package br.com.damatta.ie;
 
-import br.com.damatta.ie.validators.AC;
-import br.com.damatta.ie.validators.AL;
-import br.com.damatta.ie.validators.UFEnum;
-import br.com.damatta.ie.validators.ValidatorIE;
+import br.com.damatta.ie.validators.*;
+
+import java.util.regex.Pattern;
 
 public class TIE {
 
@@ -14,17 +13,32 @@ public class TIE {
         } catch (IllegalArgumentException ex) {
             return false;
         }
+        String ieClean = filter(ie);
 
         ValidatorIE validator = factory(ufEnum);
-        return validator.isValid(ie);
+        return validator.isValid(ieClean);
+    }
+
+    private String filter(final String ie){
+        String result = "";
+        int idx = 0;
+
+        if ("P".equals(ie.substring(0,1))){
+            result = "P";
+            idx = 1;
+        }
+        Pattern pattern = Pattern.compile("\\D+");
+        result += pattern.matcher(ie.substring(idx)).replaceAll("");
+
+        return result;
     }
 
     private ValidatorIE factory(final UFEnum uf){
         return switch (uf){
             case AC -> new AC();
             case AL -> new AL();
-            case AM -> null;
-            case AP -> null;
+            case AM -> new AM();
+            case AP -> new AP();
             case BA -> null;
             case CE -> null;
             case DF -> null;
